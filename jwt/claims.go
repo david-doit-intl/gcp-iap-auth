@@ -3,7 +3,7 @@ package jwt
 import (
 	"fmt"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // Claims represents parsed JWT Token Claims.

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // ValidateRequestClaims checks the validity of the claims in the request.
