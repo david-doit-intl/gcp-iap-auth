@@ -7,7 +7,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 
-	"github.com/imkira/gcp-iap-auth/jwt"
+	"gcp-iap-auth/jwt"
 )
 
 type proxy struct {
@@ -32,8 +32,6 @@ func (p *proxy) handler(res http.ResponseWriter, req *http.Request) {
 	claims, err := jwt.RequestClaims(req, cfg)
 	if err != nil {
 		if claims == nil || len(claims.Email) == 0 {
-			log.Printf("Failed to authenticate (%v)\n", err)
-		} else {
 			log.Printf("Failed to authenticate %q (%v)\n", claims.Email, err)
 		}
 		http.Error(res, "Unauthorized", http.StatusUnauthorized)

@@ -4,6 +4,9 @@
 # vim
 *.swp
 
+# Secret file
+.envrc
+
 # build and dist files
 /build
 /dist
