@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"gcp-iap-auth/jwt"
+	"github.com/go-ldap/ldap"
 )
 
 type proxy struct {
@@ -28,18 +29,54 @@ func newProxy(backendURL, emailHeader string) (*proxy, error) {
 	}, nil
 }
 
+func setEmailHeader(emailheader string, email string, req *http.Request) {
+	if *emailHeader != "" {
+		req.Header.Set(*emailHeader, email)
+	}
+}
+
+func checkValidEmail(email string) bool {
+	l, err := ldap.DialURL(*ldapURL)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer l.Close()
+
+	searchRequest := ldap.NewSearchRequest(
+		*baseDomain, // The base dn to search
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		"(&(objectClass=organizationalPerson))", // The filter to apply
+		[]string{"dn", "cn"},                    // A list attributes to retrieve
+		nil,
+	)
+
+	sr, err := l.Search(searchRequest)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	_ = sr
+	return true
+}
+
 func (p *proxy) handler(res http.ResponseWriter, req *http.Request) {
 	claims, err := jwt.RequestClaims(req, cfg)
+	email := claims.Email
 	if err != nil {
-		if claims == nil || len(claims.Email) == 0 {
-			log.Printf("Failed to authenticate %q (%v)\n", claims.Email, err)
+		if claims == nil || len(email) == 0 {
+			log.Printf("Failed to authenticate %q (%v)\n", email, err)
 		}
 		http.Error(res, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	if p.emailHeader != "" {
-		req.Header.Set(p.emailHeader, claims.Email)
+	setEmailHeader(p.emailHeader, email, req)
+	// Check if email is in ldap server
+	if checkValidEmail(email) {
+		p.proxy.ServeHTTP(res, req)
+		return
 	}
-	p.proxy.ServeHTTP(res, req)
+
+	http.Error(res, "Email not found in LDAP server", http.StatusUnauthorized)
 }

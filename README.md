@@ -4,6 +4,7 @@
 [Go](http://golang.org) for helping you secure your web apps running on GCP
 behind a
 [Google Cloud Platform's IAP (Identity-Aware Proxy)](https://cloud.google.com/iap/docs/) by validating IAP signed headers in the requests.
+[Ldap Server](https://support.google.com/a/answer/9089736?hl=en)
 
 ## Why
 
@@ -12,6 +13,7 @@ Validating signed headers helps you protect your app from the following kinds of
 - IAP is accidentally disabled;
 - Misconfigured firewalls;
 - Access from within the project.
+- You wish to connect and validate users via ldap
 
 ## Using it with Kubernetes
 

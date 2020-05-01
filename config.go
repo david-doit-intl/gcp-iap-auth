@@ -23,7 +23,9 @@ var (
 	tlsCertPath    = flag.String("tls-cert", "", "Path to TLS server's, intermediate's and CA's PEM certificate (optional)")
 	tlsKeyPath     = flag.String("tls-key", "", "Path to TLS server's PEM key file (optional)")
 	backend        = flag.String("backend", "", "Proxy authenticated requests to the specified URL (optional)")
-	emailHeader    = flag.String("email-header", "X-WEBAUTH-USER", "In proxy mode, set the authenticated email address in the specified header")
+	emailHeader    = flag.String("email-header", "X-Forwarded-For", "In proxy mode, set the authenticated email address in the specified header")
+	ldapURL        = flag.String("ldapURL", "ldap://ldap.example.com:389", "The address of the ldap server")
+	baseDomain     = flag.String("baseDomain", "dc=example,dc=com", "The base domain of the ldap server")
 )
 
 func initConfig() error {
