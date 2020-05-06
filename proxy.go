@@ -8,6 +8,7 @@ import (
 	"net/url"
 
 	"gcp-iap-auth/jwt"
+
 	"github.com/go-ldap/ldap"
 )
 
@@ -39,7 +40,7 @@ func checkValidEmail(email string) bool {
 	l, err := ldap.DialURL(*ldapURL)
 	if err != nil {
 		log.Fatal(err)
-		return false
+		return nil, err
 	}
 	defer l.Close()
 
@@ -51,13 +52,7 @@ func checkValidEmail(email string) bool {
 		nil,
 	)
 
-	sr, err := l.Search(searchRequest)
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
-	_ = sr
-	return true
+	return l.Search(searchRequest)
 }
 
 func (p *proxy) handler(res http.ResponseWriter, req *http.Request) {
